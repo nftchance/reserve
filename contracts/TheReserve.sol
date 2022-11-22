@@ -13,9 +13,12 @@ contract TheReserve is
     using Bytes32AddressLib for address;
     using Bytes32AddressLib for bytes32;
 
+    /// @dev Keeps track of the address that the Reserve is deployed to.
     uint256 public reserveNumber;
 
-    string public reserveDeploymentName;
+    /// @dev Keeps track of what contracts the contract being actively 
+    //       deployed can call. This uses a latent state approach.
+    bytes32[] public typeHashes;
 
     event ReserveDeployed(
           uint256 indexed index
@@ -38,9 +41,14 @@ contract TheReserve is
         ) 
     {}
 
+    /**
+     * @notice Deploys a new Reserve that the deployer can manage.
+     * @param _typeHashes The type hashes of the functions that can be called.
+     * @return reserve The address of the new Reserve.
+     * @return index The index used to instantiate the new Reserve.
+     */
     function deployAReserve(
-          string memory _name
-        , bytes32[] memory _typeHashes
+        bytes32[] memory _typeHashes
     )
         external
         returns (
@@ -50,17 +58,34 @@ contract TheReserve is
     { 
         unchecked { index = reserveNumber++; }
 
+        /// @dev Set the index that is used to control the Reserve deployment address.
         reserveNumber = index + 1;
-        reserveDeploymentName = _name;
 
-        reserve = new AReserve{salt: bytes32(index)}(
-            _typeHashes
-        );
+        /// @dev Set the functions that can be called through this Reserve.
+        typeHashes = _typeHashes;
 
+        /// @dev Deploy the Reserve.
+        reserve = new AReserve{salt: bytes32(index)}();
+
+        /// @dev Emit the event.
         emit ReserveDeployed(
               index
             , reserve
             , msg.sender
         );
+    }
+
+    /**
+     * @notice Allows the deployment of reserves without parameters beyond salt.
+     * @return Array of type hashes that define which function this contract can call. 
+     */
+    function getReserveTypeHashes()
+        external
+        view
+        returns (
+            bytes32[] memory
+        )
+    {
+        return typeHashes;
     }
 }

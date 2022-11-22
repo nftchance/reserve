@@ -2,6 +2,10 @@
 
 pragma solidity ^0.8.17;
 
+import { TheReserve } from "./TheReserve.sol";
+
+import { Auth, Authority } from "solmate/src/auth/Auth.sol";
+
 // TODO: Think the 4626 vault needs to be a separate contract.
 //       This would mean that the caller and "creditor" and "debtor"
 //       would always be the same address and the vault would be
@@ -10,17 +14,22 @@ pragma solidity ^0.8.17;
 //       the calling is not permissioned and is instead based on 
 //       the flow of money in and out of the Vault.
 
-contract AReserve { 
+contract AReserve is 
+    Auth 
+{ 
     /// @dev The Type Hashes of the functions that can be called.
     /// @notice This cannot be immutable because it is an array of bytes32 but there is no way to 
     ///         update this value so it is "conceptually" immutable.
     bytes32[] public typeHashes;
 
-    constructor(
-        bytes32[] memory _typeHashes
-    ) {
+    constructor() 
+        Auth(
+              Auth(msg.sender).owner()
+            , Auth(msg.sender).authority()
+        ) 
+    {
         /// @dev This enables the ability to set the functions that can be called in this Reserve.
-        typeHashes = _typeHashes;
+        typeHashes = TheReserve(msg.sender).getReserveTypeHashes();
     }
 
     // MANAGEMENT FUNCTIONS HERE
