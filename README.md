@@ -4,7 +4,7 @@ A collaboration between [nftchance](https://twitter.com/nftchance) and [charliem
 
 ## What is The Reserve?
 
-The Reserve is a new way to interaction with decentralized financial mechanisms on EVM chains. At the core, it is a smart contract that allows you to join existing financial management strategies.
+The Reserve is a new way to interact with decentralized financial mechanisms on EVM chains. At the core, it is a smart contract that allows you to join existing financial management strategies.
 
 Digital currencies are rarely a good store of value. They are volatile and can be subject to manipulation. The Reserve is a way to protect your assets from the volatility of the market with the introduction and newly acquired trust.
 
